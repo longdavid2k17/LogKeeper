@@ -34,4 +34,11 @@ public class OwnerController
 
         return response;
     }
+
+    @GetMapping("/delete/{id}")
+    public ResponseEntity<?> delete(@PathVariable Long id)
+    {
+        LOGGER.warn("Processing of Owner object deleting process");
+        return ownerService.deleteOwner(id);
+    }
 }

@@ -30,8 +30,16 @@ public class OwnerService
         LOGGER.info("Processing save of {} entity with values {}", Owner.class.getName(),owner);
         if(validateOwnerObject(owner))
         {
-            Owner savedOwner = ownerRepository.save(owner);
-            return ResponseEntity.ok().body(savedOwner);
+            Optional<Owner> optionalOwner = ownerRepository.findByApplicationName(owner.getApplicationName());
+            if(optionalOwner.isPresent())
+            {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("Owner of this application ["+owner.getApplicationName()+"] already exists!");
+            }
+            else
+            {
+                Owner savedOwner = ownerRepository.save(owner);
+                return ResponseEntity.ok().body(savedOwner);
+            }
         }
         else
             return ResponseEntity.status(HttpStatus.NON_AUTHORITATIVE_INFORMATION).body("Cannot save Owner entity with insufficient data!");
@@ -54,6 +62,23 @@ public class OwnerService
         }
         else
             return ResponseEntity.status(HttpStatus.NON_AUTHORITATIVE_INFORMATION).body("Cannot save Owner entity with insufficient data!");
+    }
+
+    @Transactional
+    public ResponseEntity<?> deleteOwner(Long id)
+    {
+        LOGGER.info("Processing delete of {} entity with ID {}", Owner.class.getName(),id);
+        Optional<Owner> optionalOwner = ownerRepository.findById(id);
+        if(optionalOwner.isPresent())
+        {
+            Owner deletedOwner = optionalOwner.get();
+            ownerRepository.delete(deletedOwner);
+            LOGGER.info("Owner {} has been deleted",deletedOwner);
+            return ResponseEntity.ok().body("Owner of "+deletedOwner.getApplicationName()+" has been deleted!");
+        }
+        else
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("This owner entity was not found!");
+
     }
 
     private boolean validateOwnerObject(Owner owner)
