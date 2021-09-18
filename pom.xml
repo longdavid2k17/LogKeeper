@@ -65,6 +65,26 @@
     <build>
         <plugins>
             <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                    <id>copy-resources</id>
+                    <phase>validate</phase>
+                    <goals>
+                        <goal>copy-resources</goal>
+                    </goals>
+                        <configuration>
+                            <outputDirectory>${build.directory}/classes/static/</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>../webapp/LogKeeper/dist</directory>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
